@@ -1,0 +1,74 @@
+package com.example.rest;
+
+import java.util.ArrayList;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@SpringBootApplication
+@RestController
+public class Application {
+
+	@Autowired
+	ToDoRepository toDoRepository;
+
+	@GetMapping("/dos")
+	public String getDos() {
+		return toDoRepository.findAll().toString();
+	}
+	
+	@PostMapping("/dos/{doV}")
+	public String addDo(@PathVariable String doV) {
+		toDoRepository.save(new ToDo(doV));
+		return "added";
+	}
+	
+	@DeleteMapping("/dos/{doV}")
+	public String deleteDo(@PathVariable String doV) {
+		toDoRepository.delete(new ToDo(doV));
+		return "deleted";
+	}
+	
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+}
+
+@Entity
+class ToDo{
+ 
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    Long id;
+    
+    String doV;
+ 
+    protected ToDo(){}
+    
+    public ToDo(String doV) {
+    	this.doV = doV;
+    }
+    
+    @Override
+    public String toString() {
+        return "ToDo{" +
+                "do='" + doV + '\'' +
+                '}';
+    }
+}
+
+interface ToDoRepository extends CrudRepository<ToDo, String> {
+	 
+}
